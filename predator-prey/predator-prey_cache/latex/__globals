@@ -1,0 +1,14 @@
+unnamed-chunk-1	library
+unnamed-chunk-2	read_csv	read.csv
+unnamed-chunk-3	%>%	Predator	PredatorMeanLength	Prey	PreyLength	rawamack	rawshrimps	rename	select
+unnamed-chunk-4	$	$<-	as.character	as.factor	as.numeric	class	sapply
+unnamed-chunk-5	%>%	$	mutate	Predator	Prey	summary	tolower
+unnamed-chunk-6	$	amack	plot
+unnamed-chunk-7	%>%	<	$	filter	plot	PredatorMeanLength
+unnamed-chunk-8	%>%	<	$	filter	mutate	plot	Predator	Prey	PreyLength	summary	tolower
+unnamed-chunk-9	amack	bind_rows	shrimps
+unnamed-chunk-10	%>%	group_by	mean	Predator	PredatorMeanLength	prey	Prey	summarise
+unnamed-chunk-11	~	aes	coord_flip	facet_wrap	geom_bar	ggplot	GroupedPredatorMeanLength	Predator	TotalPredatorMeanLength
+unnamed-chunk-12	aes	geom_boxplot	ggplot	prey	Prey	PreyLength
+unnamed-chunk-13	aes	geom_boxplot	ggplot	prey	Prey	PreyLength	scale_y_log10
+unnamed-chunk-14	aes	geom_boxplot	ggplot	PredatorMeanLength	prey	Prey

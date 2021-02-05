@@ -1,0 +1,24 @@
+unnamed-chunk-1	dragons	head	load
+unnamed-chunk-2	$	dragons	hist
+unnamed-chunk-3	$	$<-	scale	T
+unnamed-chunk-4	~	dragons	lm	summary
+unnamed-chunk-5	aes	bodyLength	dragons	geom_point	geom_smooth	ggplot	library	testScore
+unnamed-chunk-6	basic.lm	plot
+unnamed-chunk-7	basic.lm	plot
+unnamed-chunk-8	~	boxplot	dragons
+unnamed-chunk-9	aes	bodyLength	dragons	geom_point	ggplot	mountainRange	testScore	theme	theme_classic
+unnamed-chunk-10	~	aes	bodyLength	dragons	facet_wrap	geom_point	ggplot	testScore	xlab	ylab
+unnamed-chunk-11	~	dragons	lm	summary
+unnamed-chunk-12	library
+unnamed-chunk-13	~	dragons	lmer	summary
+unnamed-chunk-14	mixed.lmer	plot
+unnamed-chunk-15	mixed.lmer	qqline	qqnorm	resid
+unnamed-chunk-16	dragons	str
+unnamed-chunk-17	factor	head	mountainRange	site	within
+unnamed-chunk-18	~	dragons	lmer	summary
+unnamed-chunk-19	~	dragons	lmer	summary
+unnamed-chunk-20	~	aes	bodyLength	cbind	dragons	facet_wrap	geom_line	geom_point	ggplot	mixed.lmer2	pred	predict	site	testScore	theme	theme_classic	unit
+unnamed-chunk-21	~	dragons	lmer	summary
+unnamed-chunk-22	~	aes	bodyLength	cbind	dragons	facet_wrap	geom_line	geom_point	ggplot	mixed.ranslope	pred	predict	site	testScore	theme	theme_classic	unit
+unnamed-chunk-23	aes	bodyLength2	c	dragons	geom_line	geom_point	geom_ribbon	ggplot	ggpredict	labs	library	mixed.lmer2	mountainRange	predicted	std.error	testScore	theme_minimal	x
+unnamed-chunk-24	%>%	c	ggpredict	labs	library	mixed.lmer2	plot	theme_minimal
