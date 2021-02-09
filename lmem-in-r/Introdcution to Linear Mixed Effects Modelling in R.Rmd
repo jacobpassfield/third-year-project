@@ -47,6 +47,7 @@ Standardising explantory variables (`bodyLength`) to have a mean of zero (center
 
 ```{r}
 dragons$bodyLength2 <- scale(dragons$bodyLength, center=T, scale=T)
+dragons$bodyLength2
 ```
 
 `scale()` centers the data (column mean subtracted from the values in the column) and scales it (centered column values divided by the column's standard deviation).
@@ -55,7 +56,7 @@ dragons$bodyLength2 <- scale(dragons$bodyLength, center=T, scale=T)
 
 Fitiing a linear model to our data (ignoring different sites and moutain ranges) is one way to analyse this data.
 
-In the follwoing model `testScore` is the response and `bodyLength2` is the predictor (explanatory variable).
+In the following model `testScore` is the response and `bodyLength2` is the predictor (explanatory variable).
 
 ```{r}
 basic.lm <- lm(testScore ~ bodyLength2, data = dragons)
