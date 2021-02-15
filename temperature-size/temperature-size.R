@@ -15,7 +15,12 @@ speciesCount = as.data.frame(table(data$TAXONOMIC_NAME))
 library(dplyr)
 
 # no create, new data frame inspired by the temporal_data file
+# Temporal data set with likely erroneous records and lower 10% filtered out and 
+# only for the 9 locations with long-term data available 
 
+# I tried, ask Gustav tomorrow
+
+# create data frame with the specified species
 
 
 
