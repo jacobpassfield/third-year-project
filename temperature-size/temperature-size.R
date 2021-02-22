@@ -1,5 +1,5 @@
-load(file = "temperature-size/_data/fish_data.RData")
-data = main_data 
+data = load(file = "temperature-size/_data/fish_data.RData")
+data = main_data
 
 length(unique(data$TAXONOMIC_NAME))
 # 335 species
@@ -74,7 +74,11 @@ temporal_data$LocFig <- locnames$LocFig[match(temporal_data$Loc, locnames$Loc)]
 # create data frame with the specified species
 # will use this new thing anyway
 
-
+# "Size-classes of total fish length (from snout to tip of tail, or 
+# longest distance, including for stingrays) used are 2.5, 5.0, 7.5, 
+# 10.0, 12.5, 15.0, 20.0, 25.0, 30.0, 35.0, 40.0, 50.0, 62.5 cm, and 
+# above. Lengths of fish larger than 62.5 cm should be estimated to 
+# the nearest 12.5 cm and individually recorded."
 
 
 
