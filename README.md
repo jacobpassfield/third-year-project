@@ -13,11 +13,24 @@ Links to mixed effects models:
 
 *https://www.statisticssolutions.com/assumptions-of-linear-regression/*
 
-Questions so far:
-1. What do the headers mean in the main data file?
-This step is stopping me from progressing. I cannot decide which variables are fixed or random because I don't know what they are.
-2. What is the body size variable?
-3. What is the response variable in this scenario? Temperature's effect on body size.
-4. There are 332 species. Do I make 332 seperate graphs? 
-This week I knew what I needed to do, I just couldn't do it.
-Need to reschedule my week to prioritise this a little more.
+Links to simple linear models:
+
+*https://r4ds.had.co.nz/model-basics.html*
+
+*https://bookdown.org/ndphillips/YaRrr/linear-regression-with-lm.html*
+
+*http://r-statistics.co/Linear-Regression.html*
+
+*https://www.machinelearningplus.com/machine-learning/complete-introduction-linear-regression-r/*
+
+*https://www.datacamp.com/community/tutorials/linear-regression-R*
+
+*https://www.statmethods.net/stats/regression.html*
+
+*https://data.princeton.edu/r/linearmodels*
+
+*http://www.sthda.com/english/articles/40-regression-analysis/167-simple-linear-regression-in-r/*
+
+*https://ucdavis-bioinformatics-training.github.io/2018-September-Bioinformatics-Prerequisites/friday/linear_models.html*
+
+*https://rstudio.com/wp-content/uploads/2016/03/rmarkdown-cheatsheet-2.0.pdf?_ga=2.200238638.1624680954.1614024660-857998086.1614024660*
