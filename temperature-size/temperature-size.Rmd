@@ -12,17 +12,111 @@ output:
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE, cache = TRUE, autodep = TRUE, cache.comments = TRUE,   
-                      fig.align = "center", out.width = "100%")
+knitr::opts_chunk$set(echo=TRUE, cache=TRUE, autodep=TRUE, cache.comments=TRUE, fig.align="center", out.width="100%")
 ```
 
 The following report uses the ideas and data from a report found at *https://www.nature.com/articles/s41559-020-1171-0*. It follows the example given at *https://ourcodingclub.github.io/tutorials/mixed-models/*.
 
+```{r Loading libraries, warning=FALSE, message=FALSE, eval= T}
+library(tidyverse)
+```
+
+
 # Exploring the data
 
-```{r}
+```{r Loading data, warning=FALSE, message=FALSE, eval=TRUE , cache.lazy=FALSE}
 load(file = "_data/fish_data.RData")
 ```
 
-I want to investigate how temperature affects the size of different fish species.
+I investigate how temperature affects the size of different fish species.
+
+There are 335 species within this dataset. For initial analysis I focused on the fish Trachurus novaezelandiae, commonly known as the yellowtail horse mackerel. This was decided from a quick inspection of the data frame `speciesCount` and finding that yellowtail horse mackerel has the most apperances in the main data file.
+
+```{r Checking data}
+# Checking that there are 335 species
+length(unique(main_data$TAXONOMIC_NAME))
+# Creating a data frame to check how many occurances each species appear in the main data 
+# file
+speciesCount = as.data.frame(table(main_data$TAXONOMIC_NAME))
+```
+
+Created a data frame with observations from yellowtail horse mackerel only.
+
+```{r Creating frame, warning=FALSE, message=FALSE, eval=TRUE, cache.lazy=FALSE}
+YelHorMac <- main_data %>% filter(TAXONOMIC_NAME %in% "Trachurus novaezelandiae")
+```
+
+# Creating a simple linear regression model
+
+Fitting a linear model is first step when analysing data.
+
+Size-classes of total fish length (from snout to tip of tail, or longest distance, including for stingrays) used are 2.5, 5.0, 7.5, 10.0, 12.5, 15.0, 20.0, 25.0, 30.0, 35.0, 40.0, 50.0, 62.5 cm, and above. Lengths of fish larger than 62.5 cm should be estimated to the nearest 12.5 cm and individually recorded.
+
+`SizeClass` is the response and `meansst` is the response.
+
+```{r Creating basic lm}
+basic.lm <- lm(SizeClass ~ meansst, data = YelHorMac)
+# lm(formula, data)
+# formula here is reponse ~ predictor
+# ~ seperates the left- and right-hand sides in a model formula
+# the left-hand side is optional and one-sided formulae are used in some contexts
+summary(basic.lm)
+```
+
+Plotting the model.
+
+```{r Plotting basic lm}
+(prelim_plot <- ggplot(YelHorMac, aes(x=meansst, y=SizeClass)) 
+   + geom_point() + geom_smooth(method="lm"))
+# () around the whole ggplot code creates and shows the graph without the added step of 
+# typing prelim_plot after
+# method="lm" fits a linear model
+# geom_smooth() uses formula y ~ x
+# geom_smooth() adds a regression line
+# the grey zone is the 95% confidence level interval for predictions from "lm"
+```
+
+The higher the mean sea surface temperature, the smaller the size of the yellowtail horse mackerel.
+
+Size class values are distinct, not continuous. (???)
+
+Are the assumptions met?
+
+Plotting the residuals should yield a red line that is nearly flat.
+
+```{r}
+plot(basic.lm, which=1)
+# which=1: a plot of residuals against fitted values
+# line not perfectly straight but something they go along with in this example
+# for own data be careful
+# the bigger the sample size, the less of a trend expected
+```
+
+For a Q-Q plot the points should ideally fall along the diagonal dashed line.
+
+```{r}
+plot(basic.lm, which=2)
+# which=2: a normal Q-Q plot
+# points off line
+# not good
+```
+
+Is our data independent?
+
+Since the data collected multiple samples from 280 geogroups, it's expected that data from within each geogroup are more similar to each other than the data from different mountain ranges, meaning the samples are correlated.
+
+```{r}
+# checking to see if data is correlated
+boxplot(SizeClass ~ geogroup, data = YelHorMac)
+```
+
+Plotting and colouring points by mountain range.
+
+```{r}
+(colour_plot <- ggplot(YelHorMac, aes(x=meansst, y=SizeClass, colour=geogroup)) +
+    geom_point(size=2) + theme_classic() + theme(legend.position="none"))
+```
+
+These two plots show that geogroup vary both in temperatures and the corresponding body length. This confirms that our observations from within each of the ranges aren't independent. Ignoring this fact could lead to inaccurate conculsions and so we continue.
+
 
