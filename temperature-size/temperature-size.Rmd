@@ -1,5 +1,5 @@
 ---
-title: "Initial analysis on how temperature affects fish body sizes"
+title: "Initial analysis on how temperature affects fish body sizes #1"
 author: Jacob Passfield
 output: 
   pdf_document:
@@ -21,7 +21,6 @@ The following report uses the ideas and data from a report found at *https://www
 library(tidyverse)
 ```
 
-
 # Exploring the data
 
 ```{r Loading data, warning=FALSE, message=FALSE, eval=TRUE , cache.lazy=FALSE}
@@ -30,7 +29,7 @@ load(file = "_data/fish_data.RData")
 
 I investigate how temperature affects the size of different fish species.
 
-There are 335 species within this dataset. For initial analysis I focused on the fish Trachurus novaezelandiae, commonly known as the yellowtail horse mackerel. This was decided from a quick inspection of the data frame `speciesCount` and finding that yellowtail horse mackerel has the most apperances in the main data file.
+There are 335 species within this dataset. For initial analysis I focused on the fish Trachurus novaezelandiae, commonly known as the yellowtail horse mackerel. This was decided from a quick inspection of the data frame `speciesCount` and finding that yellowtail horse mackerel had the most apperances in the main data file.
 
 ```{r Checking data}
 # Checking that there are 335 species
@@ -48,11 +47,11 @@ YelHorMac <- main_data %>% filter(TAXONOMIC_NAME %in% "Trachurus novaezelandiae"
 
 # Creating a simple linear regression model
 
-Fitting a linear model is first step when analysing data.
+Fitting a linear model is a first step when analysing data.
 
 Size-classes of total fish length (from snout to tip of tail, or longest distance, including for stingrays) used are 2.5, 5.0, 7.5, 10.0, 12.5, 15.0, 20.0, 25.0, 30.0, 35.0, 40.0, 50.0, 62.5 cm, and above. Lengths of fish larger than 62.5 cm should be estimated to the nearest 12.5 cm and individually recorded.
 
-`SizeClass` is the response and `meansst` is the response.
+`SizeClass` is the response and `meansst` is the explanatory variable.
 
 ```{r Creating basic lm}
 basic.lm <- lm(SizeClass ~ meansst, data = YelHorMac)
@@ -78,7 +77,7 @@ Plotting the model.
 
 The higher the mean sea surface temperature, the smaller the size of the yellowtail horse mackerel.
 
-Size class values are distinct, not continuous. (???)
+The size class values are distinct, is there anything that we need to do?
 
 Are the assumptions met?
 
@@ -100,24 +99,6 @@ plot(basic.lm, which=2)
 # points off line
 # not good
 ```
-
-Is our data independent?
-
-Since the data collected multiple samples from 280 geogroups, it's expected that data from within each geogroup are more similar to each other than the data from different mountain ranges, meaning the samples are correlated.
-
-```{r}
-# checking to see if data is correlated
-boxplot(SizeClass ~ geogroup, data = YelHorMac)
-```
-
-Plotting and colouring points by mountain range.
-
-```{r}
-(colour_plot <- ggplot(YelHorMac, aes(x=meansst, y=SizeClass, colour=geogroup)) +
-    geom_point(size=2) + theme_classic() + theme(legend.position="none"))
-```
-
-These two plots show that geogroup vary both in temperatures and the corresponding body length. This confirms that our observations from within each of the ranges aren't independent. Ignoring this fact could lead to inaccurate conculsions and so we continue.
 
 # Transforming data to hopefully lead to better modelling
 
@@ -143,7 +124,7 @@ YelHorMac$scaledMSST <- scale(YelHorMac$meansst, center=T, scale=T)
 
 `logSizeClass` is the response and `scaledMSST` is the response.
 
-```{r Creating basic lm}
+```{r Creating lm2}
 basic.lm2 <- lm(logSizeClass ~ scaledMSST, data = YelHorMac)
 # lm(formula, data)
 # formula here is reponse ~ predictor
@@ -154,7 +135,7 @@ summary(basic.lm2)
 
 Plotting the model.
 
-```{r Plotting basic lm}
+```{r Plotting basic lm2}
 (prelim_plot <- ggplot(YelHorMac, aes(x=scaledMSST, y=logSizeClass)) 
    + geom_point() + geom_smooth(method="lm"))
 # () around the whole ggplot code creates and shows the graph without the added step of 
@@ -166,10 +147,6 @@ Plotting the model.
 ```
 
 The higher the mean sea surface temperature, the smaller the size of the yellowtail horse mackerel.
-
-Size class values are distinct, not continuous. (???)
-
-Are the assumptions met?
 
 Plotting the residuals should yield a red line that is nearly flat.
 
@@ -192,11 +169,16 @@ plot(basic.lm2, which=2)
 
 Is our data independent?
 
-Since the data collected multiple samples from 280 geogroups, it's expected that data from within each geogroup are more similar to each other than the data from different mountain ranges, meaning the samples are correlated.
+```{r}
+# Check how many different georgroups there are
+length(unique(YelHorMac$geogroup))
+```
+
+Since the data collected multiple samples from 43 geogroups, it's expected that data from within each geogroup are more similar to each other than to the data from different georgoup, meaning the observations are correlated.
 
 ```{r}
 # checking to see if data is correlated
-boxplot(logSizeClass ~ geogroup, data = YelHorMac)
+boxplot(SizeClass ~ geogroup, data = YelHorMac)
 ```
 
 Plotting and colouring points by mountain range.
@@ -206,6 +188,72 @@ Plotting and colouring points by mountain range.
     geom_point(size=2) + theme_classic() + theme(legend.position="none"))
 ```
 
+These two plots show that geogroup vary both in temperature and the corresponding body length. This confirms that our observations from within each of the ranges aren't independent. Ignoring this fact could lead to inaccurate conculsions and so we continue.
+
+We could run many seperate analyses and fit a regression for each of the mountain ranges.
+
+```{r}
+# data split by mountain range
+(split_plot <- ggplot(aes(scaledMSST, logSizeClass), data=YelHorMac) + geom_point() +
+    facet_wrap(~geogroup) + xlab("scaled mean sea surface temperature") + ylab("log transformed size class"))
+```
+
+As you can see the obstacles we face when running multiple analyses, it becomes rather cluttered and messy.
+
+# Modifying the current model
+
+We want to use all the data in one, but account for data coming from different geogroups.
+
+```{r}
+# adding geogroup as a fixed effect to our basic.lm
+geo.lm <- lm(logSizeClass ~ scaledMSST + geogroup, data=YelHorMac)
+summary(geo.lm)
+```
+
+Now body length is not significant. The model above is estimating the difference in log transformed size class between geogroups. But we are not quantifying size for each specific geogroup: want to know whether temeprature affects body length and so we want to control the variation coming from geogroups or, the random effects coming from geogroups. Time for mixed effects models.
+
+# Mixed effects models
+
+A mixed model allows us to use all the data (higher smaple size) and account for the correlations between data coming from the sites and mountain ranges. Also, we'll estimate fewer parameters and avoid porblems with multiple comparisons that we'd encounter while using seperate regressions.
+
+```{r, message=FALSE, warning=FALSE}
+library(lme4)
+```
+
+Golden rule: want your random effects to have at least five levels. So if we wanted to control the effects of a dragon's sex on intelligence, we would fit sex as a fixed effect, not random (sex: male or female, a two level factor).
+
+Estimating on few data points is very imprecise and so even though you could, there wouldn't be a lot confidence in it.
+
+Randomness doesn't have much to do with mathematical randomness, but more to do with the grouping of variables. It's about making our models representative of our questions and getting better estimates.
+
+The response variable is `logSizeClass` and we are attempting explain part of the variation in body length through fitting mean sea surface temperature as a fixed effect. However the response variable has some residual (unexplained) variation associated with geogroups. We model that unexplained variation through variance by using random effects.
+
+Research question changes slightly to: is there an association between temperature and yellow horse mackerel's body length *after* controlling for the variation in geogroups?
+
+```{r}
+# fit the random effect using (1|variableName)
+mixed.lmer <- lmer(logSizeClass ~ scaledMSST + (1|geogroup), data=YelHorMac)
+summary(mixed.lmer)
+```
+
+Need to investigate what this means.
+
+```{r}
+plot(mixed.lmer)
+# looks alright, no patterns evident
+```
+
+Still a decrease? 
+
+```{r}
+qqnorm(resid(mixed.lmer))
+qqline(resid(mixed.lmer))
+# points fall nicely onto the line
+```
+
+Points fall on line better. Still off at the end.
+
+Confused :)
 
 
 

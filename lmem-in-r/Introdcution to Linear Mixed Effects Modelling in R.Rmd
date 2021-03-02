@@ -164,7 +164,7 @@ The difference between them has little to do with the variables themselves and m
 
 Fixed effects are variables that we expect will have on the response variable. In our example, we want to know how dragon body length impacts the dragon's test score. So body length is a fixed effect and test score is the dependent variable.
 
-Random effects are usually grouping factors that we are trying to control. They're always categorical. We are not specifically interested in their impact on the response variable, but we know that they might be inlfuencing the patterns we see.
+Random effects are usually grouping factors that we are trying to control. They're always categorical. We are not specifically interested in their impact on the response variable, but we know that they might be influencing the patterns we see.
 
 The data for our random effect is just a sample of all the possibilities. We can't collect data for every mountain where dragons live (time-consuming) so we generalise results to a whole population based on representative sampling. We don't care about estikating how much better pupils in school A have done to school B, but since their respective teachers might be a reason why their scores would be different, we'd like to account for this variation when we predict scores for pupils in school Z.
 
@@ -176,13 +176,13 @@ Golden rule: want your random effects to have at least five levels. So if we wan
 
 Estimating on few data points is very imprecise and so even though you could, there wouldn't be a lot confidence in it.
 
-Random doesnt have much to do with mathematical randomness, but more to do with the grouping of variables. It's about making our models representative of our questions and getting better estimates.
+Randomness doesn't have much to do with mathematical randomness, but more to do with the grouping of variables. It's about making our models representative of our questions and getting better estimates.
 
 Ask yourself: what are you trying to do? What are you trying to make predictions about? What is just variation (noise) that you need to control for?
 
 ## Fitting our first mixed model
 
-The response varibale is `testScore` and we are attempting explain part of the variation in test score through fitting body length as a fixed effect. However the response variable has some residual (unexplained) variation associated with mountain ranges. We model that unexplained variation through variance by using random effects.
+The response variable is `testScore` and we are attempting explain part of the variation in test score through fitting body length as a fixed effect. However the response variable has some residual (unexplained) variation associated with mountain ranges. We model that unexplained variation through variance by using random effects.
 
 Variation: dispersion.
 Variance: quantifies the dispersion.
