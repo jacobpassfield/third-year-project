@@ -21,8 +21,6 @@ YHM_data$year <- as.factor(YHM_data$year)
 # load(file = "temperature-size/_data/YHM_data.RData")
 length(unique(YHM_data$SurveyID))
 
-
-
 # First basic linear model
 basic.lm <- lm(SizeClass ~ meansst, data = YHM_data)
 summary(basic.lm)
@@ -166,6 +164,51 @@ ggplot(pred.mm) +
                aes(x = scaledMSST, y = logSizeClass, colour = geogroup)) + 
   labs(y="Log-transformed size class (cm)", x="Scaled mean SST (°C)", 
          title = "Jacob") + 
-    theme_minimal()
+    theme_minimal() + theme(legend.position="none")
+
+##########################################################################
+
+# Creating data frame including black-spot goatfish only
+TSD_data <- main_data %>% 
+  filter(TAXONOMIC_NAME %in% "Dascyllus trimaculatus")
+
+TSD_data$geogroup <- as.factor(TSD_data$geogroup)
+TSD_data$SurveyID <- as.factor(TSD_data$SurveyID)
+TSD_data$year <- as.factor(TSD_data$year)
+
+TSD_data <- mutate(TSD_data, logSizeClass = log(SizeClass))
+
+TSD_data$scaledMSST <- scale(TSD_data$meansst, center=T, scale=T)
+
+mixed.lmer5 <- lmer(logSizeClass ~ scaledMSST +  (1|geogroup) + (1|year) + (1|SurveyID), data=TSD_data)
+summary(mixed.lmer5) # does reduce correlation of fixed effects
+
+pred.mm <- ggpredict(mixed.lmer5, terms = c("scaledMSST"))  # this gives overall predictions for the model
+
+ggplot(pred.mm) + 
+  geom_line(aes(x = x, y = predicted)) +          # slope
+  geom_ribbon(aes(x = x, ymin = predicted - std.error, ymax = predicted + std.error), 
+              fill = "lightgrey", alpha = 0.5) +  # error band
+  geom_point(data = TSD_data,                      # adding the raw data (scaled values)
+             aes(x = scaledMSST, y = logSizeClass, colour = geogroup)) + 
+  labs(y="Log-transformed size class (cm)", x="Scaled mean SST (°C)", 
+       title = "Jacob") + 
+  theme_minimal() + theme(legend.position="none")
+
+ggpredict(mixed.lmer5, terms = c("scaledMSST", "geogroup [sample=9]"), type = "re") %>% 
+  plot() + 
+  labs(x = "SST", y = "Size", title = "Effect of temperature on body size in TSD") + 
+  theme_minimal()
+
+mixed.ranslope <- lmer(logSizeClass ~ scaledMSST + (1 + scaledMSST|geogroup), data = TSD_data) 
+
+summary(mixed.ranslope)
+
+library(sjPlot)
+plot_model(mixed.ranslope, type = "re", show.values = TRUE)
+
+# show summary
+summary(mixed.ranslope)
+
 
 
