@@ -24,7 +24,7 @@ library(tidyverse)
 # Exploring the data
 
 ```{r Loading data, warning=FALSE, message=FALSE, eval=FALSE, cache.lazy=FALSE}
-zload(file = "_data/fish_data.RData")
+load(file = "_data/fish_data.RData")
 ```
 
 I investigate how temperature affects the size of different fish species.
