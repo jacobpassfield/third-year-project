@@ -3,8 +3,24 @@ library(ggplot2)
 
 load(file = "temperature-size/_data/fish_data.RData")
 
+main_rec <- main_data %>% # copied
+              group_by(TAXONOMIC_NAME, geogroup, year) %>%
+                summarise(records = n()) %>%
+                  filter(records >= 10) # must have 10 obs per year at a geogroup 
+
+# must be at least 10 obervations at a site within a given year
+main_joined <- semi_join(main_data, main_rec, by = c("TAXONOMIC_NAME", "geogroup", "year"))
+
+main_year <- main_joined %>% # copied
+              group_by(TAXONOMIC_NAME, geogroup) %>%
+                summarise(years_total = length(unique(year))) %>% # years per location
+                  filter(years_total >= 5) %>% # must have 5 years at a loc 
+                    arrange(TAXONOMIC_NAME, geogroup)
+
+data <- semi_join(main_joined, main_year, by = c("TAXONOMIC_NAME", "geogroup")) 
+
 # Checking that there are 335 species
-length(unique(main_data$TAXONOMIC_NAME))
+length(unique(main_year$TAXONOMIC_NAME))
 # Creating a data frame to check how many occurances each species appear in the main data file
 speciesCount <- main_data %>% count(TAXONOMIC_NAME)
 
@@ -37,8 +53,17 @@ plot(basic.lm, which=2)
 
 # Transforming data to hopefully lead to better modelling
 hist(YHM_data$SizeClass)
+size_obs <- YHM_data %>% group_by(SizeClass) %>% summarise(count=n())
+ggplot(size_obs, aes(x=factor(SizeClass), y=count)) + geom_point() + geom_line(group=1) +
+  scale_y_continuous(labels = scales::comma) + theme_classic()
+
 
 YHM_data <- mutate(YHM_data, logSizeClass = log(SizeClass))
+logSize_obs <- YHM_data %>% group_by(logSizeClass) %>% summarise(count=n())
+ggplot(logSize_obs, aes(x=logSizeClass, y=count)) + geom_point() + geom_line(group=1) +
+  scale_y_continuous(labels = scales::comma) + theme_classic()
+
+
 hist(YHM_data$logSizeClass)
 
 YHM_data$scaledMSST <- scale(YHM_data$meansst, center=T, scale=T)
@@ -168,11 +193,11 @@ ggplot(pred.mm) +
 
 ##########################################################################
 
-# Creating data frame including black-spot goatfish only
-TSD_data <- main_data %>% 
+# Creating data frame including threespot dascyllus (domino damsel) only
+TSD_data <- data %>% 
   filter(TAXONOMIC_NAME %in% "Dascyllus trimaculatus")
 
-TSD_data$geogroup <- as.factor(TSD_data$geogroup)
+TSD_data$Geogroup <- as.factor(TSD_data$geogroup)
 TSD_data$SurveyID <- as.factor(TSD_data$SurveyID)
 TSD_data$year <- as.factor(TSD_data$year)
 
