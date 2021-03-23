@@ -201,7 +201,15 @@ TSD_data$Geogroup <- factor(TSD_data$Geogroup)
 TSD_data$Year <- factor(TSD_data$Year)
 TSD_data$SurveyID <- factor(TSD_data$SurveyID)
 
-TSD.lmer <- lmer(logSizeClass ~ NormalisedSST +  (1|Geogroup) + (1|Year) + (1|SurveyID), data = TSD_data)
+TSD.lmer <- lmer(logSizeClass ~ NormalisedSST +  (1|Geogroup) + (1|Year) + (1|SurveyID), control = lmerControl(optimizer ="Nelder_Mead"), data = TSD_data)
 # MODEL FAILED TO CONVERGE
+# https://stats.stackexchange.com/questions/242109/model-failed-to-converge-warning-in-lmer
+# https://biologyforfun.wordpress.com/2018/04/09/help-i-have-convergence-warnings/
+# https://arxiv.org/pdf/1701.04858.pdf
+
+
+
+
+
 
 
