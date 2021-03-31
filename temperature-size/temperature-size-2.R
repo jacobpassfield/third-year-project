@@ -5,43 +5,6 @@ library(lme4)
 library(ggeffects)
 library(sjPlot)
 
-# DATA FILTERING
-
-load(file = "temperature-size/_data/fish_data.RData")
-
-# Select and rename relevant variables
-selected_data <- main_data %>%
-                    rename("TaxonomicName" = "TAXONOMIC_NAME", "SpeciesEpithet" = "SPECIES_EPITHET",
-                           "Genus" = "GENUS", "Family" = "FAMILY", "Order" = "ORDER", "Day" = "day",
-                           "Month" = "month", "Year" = "year", "Geogroup" = "geogroup", 
-                           "Midpoint" = "midpoint", "MeanSST" = "meansst") %>%
-                      select(Location, SurveyID, SiteCode, Diver, TaxonomicName, SpeciesEpithet,
-                             Genus, Family, Order, SizeClass, Day, Month, Year, Geogroup, 
-                             SiteLat, SiteLong, Midpoint, MeanSST, MaxSizeObs)
-
-# At least 10 obervations at a geogroup within a given year
-
-recorded_data <- selected_data %>% # copied
-                  group_by(TaxonomicName, Geogroup, Year) %>%
-                    summarise(records = n()) %>%
-                      filter(records >= 10) # must have 10 obs per year at a geogroup
-                                            # ran into issues with only 1 or no observations at a given geogroup
-
-joined_data <- semi_join(selected_data, recorded_data, by = c("TaxonomicName", "Geogroup", "Year"))
-
-# At least 5 years worth of observations at a geogroup
-
-yearly_data <- joined_data %>% # copied
-                group_by(TaxonomicName, Geogroup) %>%
-                 summarise(total_years = length(unique(Year))) %>% # years per geogroup
-                  filter(total_years >= 5) %>% # must have 5 years at a geogroup 
-                    arrange(TaxonomicName, Geogroup)
-
-data <- semi_join(joined_data, yearly_data, by = c("TaxonomicName", "Geogroup")) 
-
-length(unique(data$Geogroup)) # 53
-length(unique(data$TaxonomicName)) # 208
-
 # DATA EXPLORATION
 
 # Yellow Horsetail Mackerel
