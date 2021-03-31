@@ -1,24 +1,6 @@
 library(tidyverse)
 library(ggplot2)
 
-load(file = "temperature-size/_data/fish_data.RData")
-
-main_rec <- main_data %>% # copied
-              group_by(TAXONOMIC_NAME, geogroup, year) %>%
-                summarise(records = n()) %>%
-                  filter(records >= 10) # must have 10 obs per year at a geogroup 
-
-# must be at least 10 obervations at a site within a given year
-main_joined <- semi_join(main_data, main_rec, by = c("TAXONOMIC_NAME", "geogroup", "year"))
-
-main_year <- main_joined %>% # copied
-              group_by(TAXONOMIC_NAME, geogroup) %>%
-                summarise(years_total = length(unique(year))) %>% # years per location
-                  filter(years_total >= 5) %>% # must have 5 years at a loc 
-                    arrange(TAXONOMIC_NAME, geogroup)
-
-data <- semi_join(main_joined, main_year, by = c("TAXONOMIC_NAME", "geogroup")) 
-
 # Checking that there are 335 species
 length(unique(main_year$TAXONOMIC_NAME))
 # Creating a data frame to check how many occurances each species appear in the main data file
