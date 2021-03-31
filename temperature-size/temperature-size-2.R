@@ -58,7 +58,7 @@ YHM.lm2 <- lm(logSizeClass ~ NormalisedSST, data = YHM_data)
 summary(YHM.lm2)
 
 ggplot(YHM_data, aes(x=NormalisedSST, y=logSizeClass)) +
-  labs(y="Size Class (cm)", x="Mean SST (°C)") +
+  labs(y="Size Class (cm)", x="Normalised SST (°C)") +
     geom_point() + 
       geom_smooth(method="lm")
 
