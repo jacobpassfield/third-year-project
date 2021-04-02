@@ -4,6 +4,8 @@
 # Load libraires
 library(tidyverse)
 library(ggplot2)
+library(lme4)
+library(ggeffects)
 
 # Load spatial data.
 load(file = "temperature-size/data/spatial_data.RData")
@@ -147,4 +149,36 @@ ggplot(PW_data, aes(x=NormalisedSST, y=logSizeClass)) +
 
 # Before adding a Geogroup as a fixed effect, see that multiple parameters and 
 # tiny sample size.
+
+geo.lm <- lm(logSizeClass ~ NormalisedSST + Geogroup, data = PW_data)
+
+# MIXED EFFECTS
+
+PW_data$SurveyID <- factor(PW_data$SurveyID)
+
+PW.lmer1 <- lmer(logSizeClass ~ NormalisedSST + (1|Geogroup), data = PW_data)
+PW.lmer2 <- lmer(logSizeClass ~ NormalisedSST + (1|SurveyID), data = PW_data)
+PW.lmer3 <- lmer(logSizeClass ~ NormalisedSST + (1|Geogroup/SurveyID), data = PW_data)
+PW.lmer4 <- lmer(logSizeClass ~ NormalisedSST + (1|Geogroup) + (1|SurveyID), data = PW_data)
+PW.lmer5 <- lmer(logSizeClass ~ NormalisedSST + (1|fYear), data = PW_data)
+PW.lmer6 <- lmer(logSizeClass ~ NormalisedSST + (1|Geogroup) + (1|SurveyID) + (1|fYear), data = PW_data)
+
+# Test Geogroup, SurveyID separately and then together.
+# In original article, used year and survey as random effects.
+# But..
+
+anova(PW.lmer1, PW.lmer2, PW.lmer3, PW.lmer4, PW.lmer5, PW.lmer6)
+
+# For nested random effects, the factor appears ONLY within a particular level of 
+# another factor (each site belongs to a specific mountain range and only to that 
+# range)
+
+# Crossed effects, a given factor appears in more than one level of another factor
+# (dragons appearing within more than one mountain range)
+
+# An observation has to be in a specific SurveyID to be in a specific Geogroup
+
+
+
+
 
