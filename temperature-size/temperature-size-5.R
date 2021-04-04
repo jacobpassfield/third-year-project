@@ -96,3 +96,14 @@ ggplot(pred.mm) +
   theme_minimal() + 
   theme(legend.position="none")
 
+op <- par(mfrow = c(2,2), mar = c(5,4,2,2))  # sets graphical window with four panels and a certain amount of white space around each panel
+# Homogeneity.
+plot(MM7, which=1)
+# Should be flat.
+E <- resid(MM7)
+# Normality.
+hist(E, xlab = "Residuals", main = "")
+plot(MM7, which=2)
+# Independence.
+plot(PW_data$MeanSST, E, xlab = "MeanSST", ylab= "Residuals")
+par(op)
