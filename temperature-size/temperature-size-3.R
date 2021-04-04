@@ -63,6 +63,7 @@ plot(PW.lm, which=2)
 plot(PW_data$MeanSST, E, xlab = "MeanSST", ylab= "Residuals")
 
 # Transforming data to hopefully lead to better modelling
+# RESPONSE
 # Distribution of size
 PW_size <- PW_data %>% group_by(SizeClass) %>% summarise(count=n())
 ggplot(PW_size, aes(x=factor(SizeClass), y=count)) + 
@@ -85,6 +86,7 @@ ggplot(PW_logSize, aes(x=logSizeClass, y=count)) +
 # Normalised explanatory variable by subtracting SST mean from median
 # Will reduce the correlation between fixed effects
 # Model failed to converge with standard normalising procedure
+# EXPLANATORY
 PW_data <- PW_data %>% mutate(NormalisedSST = MeanSST - SpeciesMedianSST) 
 
 # Repeat modelling
@@ -154,6 +156,8 @@ geo.lm <- lm(logSizeClass ~ NormalisedSST + Geogroup, data = PW_data)
 
 # MIXED EFFECTS
 
+# RANDOM INTERCEPT MODEL
+
 PW_data$SurveyID <- factor(PW_data$SurveyID)
 
 PW.lmer1 <- lmer(logSizeClass ~ NormalisedSST + (1|Geogroup), data = PW_data)
@@ -178,7 +182,19 @@ anova(PW.lmer1, PW.lmer2, PW.lmer3, PW.lmer4, PW.lmer5, PW.lmer6)
 
 # An observation has to be in a specific SurveyID to be in a specific Geogroup
 
+pred.mm <- ggpredict(PW.lmer3, terms = c("NormalisedSST"))  # this gives overall predictions for the model
 
+# Plot the predictions 
+ggplot(pred.mm) + 
+  geom_line(aes(x = x, y = predicted)) + # slope
+  geom_ribbon(aes(x = x, ymin = predicted - std.error, ymax = predicted + std.error), 
+              fill = "lightgrey", alpha = 0.5) +  # error band
+  geom_point(data = PW_data,  # adding the raw data (scaled values)
+             aes(x = NormalisedSST, y = logSizeClass)) + 
+  labs(y="Log-transformed size class (cm)", x="Normalised mean SST (°C)", 
+       title = "How temperature affects the body size of Pearly Wrasse") + 
+  theme_minimal() + 
+  theme(legend.position="none")
 
 
 
