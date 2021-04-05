@@ -36,7 +36,7 @@ anova(M1, M2)
 
 # Adding variance structure make epsilon_{ijk} ~ N(0, sigma_{s}^2) Allows residuals from different years?
 
-summary(M2)
+summary(M2)# U
 
 op <- par(mfrow = c(2,2), mar = c(5,4,2,2))  # sets graphical window with four panels and a certain amount of white space around each panel
 # Homogeneity.
