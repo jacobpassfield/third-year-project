@@ -1,4 +1,6 @@
 # third-year-project
+This is NOT where the code for my dissertation can be found. See final-year-project.
+
 Data analysis in fisheries science.
 
 This is a line from RStudio.
